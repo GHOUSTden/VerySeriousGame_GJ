@@ -12,11 +12,6 @@ public class DynamicWheel : MonoBehaviour
 
     public List<SliceData> wheelSlices = new List<SliceData>();
 
-    private void Start()
-    {
-        GenerateWheel();
-    }
-
     public void GenerateWheel()
     {
         foreach (Transform child in slicesContainer)
