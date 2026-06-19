@@ -1,8 +1,10 @@
-using UnityEngine;
-using UnityEngine.UI;
 using System.Collections.Generic;
+using UnityEngine;
+using UnityEngine.EventSystems;
+using UnityEngine.UI;
+using DG.Tweening;
 
-public class DynamicWheel : MonoBehaviour
+public class DynamicWheel : MonoBehaviour, IPointerClickHandler
 {
     [SerializeField] private GameObject slicePrefab;
     [SerializeField] private Transform slicesContainer;
@@ -11,6 +13,8 @@ public class DynamicWheel : MonoBehaviour
     [SerializeField] private float sliceHeight = 1f;
 
     public List<SliceData> wheelSlices = new List<SliceData>();
+
+    private bool isSpinning = false;
 
     public void GenerateWheel()
     {
@@ -82,6 +86,20 @@ public class DynamicWheel : MonoBehaviour
             rt.anchoredPosition = Vector2.zero;
             rt.sizeDelta = new Vector2(sliceWidth, sliceHeight);
             rt.localScale = Vector3.one;
+        }
+    }
+
+    public void OnPointerClick(PointerEventData eventData)
+    {
+        if (!isSpinning)
+        {
+            isSpinning = true;
+            int randomAngle = Random.Range(0, 361);
+
+            slicesContainer.DOPunchScale(new Vector3(-0.1f, -0.1f, 0f), 0.15f, 10, 1f);
+            slicesContainer.DOLocalRotate(new Vector3(0f, 0f, -((360 * 5) + randomAngle)), 5f, RotateMode.FastBeyond360)
+                .SetEase(Ease.OutQuad)
+                .OnComplete(() => isSpinning = false);
         }
     }
 }
