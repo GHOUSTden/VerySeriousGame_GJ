@@ -4,7 +4,7 @@ using UnityEngine.EventSystems;
 using UnityEngine.UI;
 using DG.Tweening;
 
-public class DynamicWheel : MonoBehaviour, IPointerClickHandler
+public class DynamicWheel : MonoBehaviour, IPointerClickHandler, IPointerEnterHandler, IPointerExitHandler
 {
     [SerializeField] private GameObject slicePrefab;
     [SerializeField] private Transform slicesContainer;
@@ -16,8 +16,14 @@ public class DynamicWheel : MonoBehaviour, IPointerClickHandler
 
     private bool isSpinning = false;
 
+    private Vector2 originalContainerScale;
+
+    private Sequence activeSequence;
+
     public void GenerateWheel()
     {
+        originalContainerScale = slicesContainer.localScale;
+
         foreach (Transform child in slicesContainer)
         {
             Destroy(child.gameObject);
@@ -89,6 +95,33 @@ public class DynamicWheel : MonoBehaviour, IPointerClickHandler
         }
     }
 
+    public void OnPointerEnter(PointerEventData eventData)
+    {
+        if (activeSequence != null && activeSequence.IsActive())
+        {
+            activeSequence.Kill();
+        }
+
+        activeSequence = DOTween.Sequence();
+
+        if (!isSpinning)
+        {
+            activeSequence.Append(slicesContainer.DOScale(Vector3.one * 1.015f, 0.25f));
+        }
+    }
+
+    public void OnPointerExit(PointerEventData eventData)
+    {
+        if (activeSequence != null && activeSequence.IsActive())
+        {
+            activeSequence.Kill();
+        }
+
+        activeSequence = DOTween.Sequence();
+        
+        activeSequence.Append(slicesContainer.DOScale(originalContainerScale, 0.25f));
+    }
+
     public void OnPointerClick(PointerEventData eventData)
     {
         if (!isSpinning)
@@ -100,6 +133,14 @@ public class DynamicWheel : MonoBehaviour, IPointerClickHandler
             slicesContainer.DOLocalRotate(new Vector3(0f, 0f, -((360 * 5) + randomAngle)), 5f, RotateMode.FastBeyond360)
                 .SetEase(Ease.OutQuad)
                 .OnComplete(() => isSpinning = false);
+        }
+    }
+
+    private void OnDisable()
+    {
+        if (activeSequence != null && activeSequence.IsActive())
+        {
+            activeSequence.Kill();
         }
     }
 }
