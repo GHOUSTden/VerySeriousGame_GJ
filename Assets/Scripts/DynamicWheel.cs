@@ -1,17 +1,16 @@
 using DG.Tweening;
 using System.Collections.Generic;
-using Unity.VisualScripting;
 using UnityEngine;
-using UnityEngine.Audio;
-using UnityEngine.Events;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
+using TMPro;
 
 public class DynamicWheel : MonoBehaviour, IPointerClickHandler, IPointerEnterHandler, IPointerExitHandler
 {
     [Header("Prefabs, etc.")]
     [SerializeField] private GameObject slicePrefab;
     [SerializeField] private Transform slicesContainer;
+    [SerializeField] private Transform slicesParent;
     [SerializeField] private GameObject linePrefab;
     [SerializeField] private Transform linesTransform;
 
@@ -30,9 +29,6 @@ public class DynamicWheel : MonoBehaviour, IPointerClickHandler, IPointerEnterHa
     public List<SliceData> wheelSlices = new List<SliceData>();
 
     [HideInInspector] public List<SliceBehaviour> activeWheelSlices = new List<SliceBehaviour>();
-
-    public UnityAction OnSpinStart;
-    public UnityAction<SliceBehaviour> OnSpinEnd;
 
     private bool isSpinning = false;
 
@@ -56,10 +52,10 @@ public class DynamicWheel : MonoBehaviour, IPointerClickHandler, IPointerEnterHa
         nonZeroChancesIndices.Clear();
         accumulatedWeight = 0;
 
-        foreach (Transform child in slicesContainer)
+        /*foreach (Transform child in slicesContainer)
         {
             Destroy(child.gameObject);
-        }
+        }*/
 
         if (linesTransform != null)
         {
@@ -89,7 +85,8 @@ public class DynamicWheel : MonoBehaviour, IPointerClickHandler, IPointerEnterHa
                 continue;
             }
 
-            GameObject newSliceObj = Instantiate(slicePrefab, slicesContainer);
+            GameObject newSliceObj = Instantiate(slicePrefab, slicesParent);
+            newSliceObj.AddComponent<SliceBehaviour>();
             SetupRectTransform(newSliceObj);
 
             SliceBehaviour behaviour = newSliceObj.GetComponent<SliceBehaviour>();
@@ -100,6 +97,12 @@ public class DynamicWheel : MonoBehaviour, IPointerClickHandler, IPointerEnterHa
                 behaviour.currentSliceColor = data.SliceColor;
                 behaviour.currentSliceWeight = data.SliceWeight;
                 activeWheelSlices.Add(behaviour);
+            }
+
+            TextMeshProUGUI sliceText = newSliceObj.GetComponentInChildren<TextMeshProUGUI>();
+            if (sliceText != null)
+            {
+                sliceText.text = behaviour.currentSlicePoints.ToString();
             }
 
             Image image = newSliceObj.GetComponent<Image>();
@@ -114,7 +117,7 @@ public class DynamicWheel : MonoBehaviour, IPointerClickHandler, IPointerEnterHa
             if (linePrefab != null && linesTransform != null)
             {
                 Transform lineTrns = Instantiate(linePrefab, linesTransform.position, Quaternion.identity, linesTransform).transform;
-                lineTrns.RotateAround(slicesContainer.position, Vector3.back, (sliceAngle * i) + halfSliceAngle);
+                lineTrns.RotateAround(slicesContainer.position, Vector3.back, sliceAngle * i);
             }
         }
     }
@@ -205,7 +208,6 @@ public class DynamicWheel : MonoBehaviour, IPointerClickHandler, IPointerEnterHa
         }
 
         isSpinning = true;
-        OnSpinStart?.Invoke();
 
         int index = GetRandomPieceIndex();
 
@@ -240,9 +242,16 @@ public class DynamicWheel : MonoBehaviour, IPointerClickHandler, IPointerEnterHa
             .OnComplete(() => {
                 isSpinning = false;
 
+                if (activeWheelSlices == null || activeWheelSlices.Count == 0)
+                {
+                    Debug.LogError("ActiveWheelSlices is empty");
+                }
+
                 if (index < activeWheelSlices.Count)
                 {
-                    OnSpinEnd?.Invoke(activeWheelSlices[index]);
+                    SliceBehaviour landedSlice = activeWheelSlices[index];
+
+                    Debug.Log($"Slice index: {index}, Points: {landedSlice.currentSlicePoints}");
                 }
             });
     }
