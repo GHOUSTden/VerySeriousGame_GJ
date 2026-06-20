@@ -1,5 +1,6 @@
 using System;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class GameEntryPoint : MonoBehaviour
 {
@@ -44,7 +45,6 @@ public class GameEntryPoint : MonoBehaviour
     private void StartGame()
     {
         var dynamicWheel = GameObject.Find("Canvas/Circle").GetComponent<DynamicWheel>();
-
         dynamicWheel.GenerateWheel();
     }
 }
