@@ -1,32 +1,72 @@
+using DG.Tweening;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.Audio;
+using UnityEngine.Events;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
-using DG.Tweening;
 
 public class DynamicWheel : MonoBehaviour, IPointerClickHandler, IPointerEnterHandler, IPointerExitHandler
 {
+    [Header("Prefabs, etc.")]
     [SerializeField] private GameObject slicePrefab;
     [SerializeField] private Transform slicesContainer;
+    [SerializeField] private GameObject linePrefab;
+    [SerializeField] private Transform linesTransform;
 
+    [Header("Slice Configs")]
     [SerializeField] private float sliceWidth = 1f;
     [SerializeField] private float sliceHeight = 1f;
 
+    [Header("Audio")]
+    [SerializeField] private AudioSource audioSource;
+    [SerializeField] private AudioClip tickAudioClip;
+    [SerializeField][Range(0f, 1f)] private float volume = 0.5f;
+    [SerializeField][Range(-3f, 3f)] private float pitch = 1f;
+
+    [Range(1, 20)] public int spinDuration = 5;
+
     public List<SliceData> wheelSlices = new List<SliceData>();
+
+    [HideInInspector] public List<SliceBehaviour> activeWheelSlices = new List<SliceBehaviour>();
+
+    public UnityAction OnSpinStart;
+    public UnityAction<SliceBehaviour> OnSpinEnd;
 
     private bool isSpinning = false;
 
     private Vector2 originalContainerScale;
 
-    private Sequence activeSequence;
+    [Header("IDK")]
+    private float sliceAngle;
+    private float halfSliceAngle;
+    private float halfSliceAngleWithPaddings;
+    private double accumulatedWeight;
+    private List<int> nonZeroChancesIndices = new List<int>();
+    private System.Random rand = new System.Random();
+
+    private DG.Tweening.Sequence activeSequence;
 
     public void GenerateWheel()
     {
         originalContainerScale = slicesContainer.localScale;
 
+        activeWheelSlices.Clear();
+        nonZeroChancesIndices.Clear();
+        accumulatedWeight = 0;
+
         foreach (Transform child in slicesContainer)
         {
             Destroy(child.gameObject);
+        }
+
+        if (linesTransform != null)
+        {
+            foreach (Transform child in linesTransform)
+            {
+                Destroy(child.gameObject);
+            }
         }
 
         if (wheelSlices.Count == 0 || slicePrefab == null)
@@ -34,16 +74,12 @@ public class DynamicWheel : MonoBehaviour, IPointerClickHandler, IPointerEnterHa
             return;
         }
 
-        float totalWeight = 0f;
-        foreach (var sliceData in wheelSlices)
-        {
-            if (sliceData != null)
-            {
-                totalWeight += sliceData.SliceWeight;
-            }
-        }
+        sliceAngle = 360f / wheelSlices.Count;
+        halfSliceAngle = sliceAngle / 2f;
+        halfSliceAngleWithPaddings = halfSliceAngle - (halfSliceAngle / 4f);
 
-        float accumulatedZRotation = 0f;
+        CalculateWeightsAndIndices();
+        SetupAudio();
 
         for (int i = 0; i < wheelSlices.Count; i++)
         {
@@ -57,25 +93,28 @@ public class DynamicWheel : MonoBehaviour, IPointerClickHandler, IPointerEnterHa
             SetupRectTransform(newSliceObj);
 
             SliceBehaviour behaviour = newSliceObj.GetComponent<SliceBehaviour>();
-
             if (behaviour != null)
             {
                 behaviour.sliceData = data;
                 behaviour.currentSlicePoints = data.SlicePoints;
                 behaviour.currentSliceColor = data.SliceColor;
                 behaviour.currentSliceWeight = data.SliceWeight;
+                activeWheelSlices.Add(behaviour);
             }
 
             Image image = newSliceObj.GetComponent<Image>();
             if (image != null)
             {
                 image.color = data.SliceColor;
+                image.fillAmount = sliceAngle / 360f;
+            }
 
-                float fillPercentage = data.SliceWeight / totalWeight;
-                image.fillAmount = fillPercentage;
+            newSliceObj.transform.RotateAround(slicesContainer.position, Vector3.back, sliceAngle * i);
 
-                newSliceObj.transform.localRotation = Quaternion.Euler(0, 0, -accumulatedZRotation);
-                accumulatedZRotation += fillPercentage * 360f;
+            if (linePrefab != null && linesTransform != null)
+            {
+                Transform lineTrns = Instantiate(linePrefab, linesTransform.position, Quaternion.identity, linesTransform).transform;
+                lineTrns.RotateAround(slicesContainer.position, Vector3.back, (sliceAngle * i) + halfSliceAngle);
             }
         }
     }
@@ -83,7 +122,6 @@ public class DynamicWheel : MonoBehaviour, IPointerClickHandler, IPointerEnterHa
     private void SetupRectTransform(GameObject obj)
     {
         RectTransform rt = obj.GetComponent<RectTransform>();
-
         if (rt != null)
         {
             rt.anchorMin = new Vector2(0.5f, 0.5f);
@@ -92,6 +130,38 @@ public class DynamicWheel : MonoBehaviour, IPointerClickHandler, IPointerEnterHa
             rt.anchoredPosition = Vector2.zero;
             rt.sizeDelta = new Vector2(sliceWidth, sliceHeight);
             rt.localScale = Vector3.one;
+            rt.localPosition = new Vector3(rt.localPosition.x, rt.localPosition.y, 0f);
+        }
+    }
+
+    private void SetupAudio()
+    {
+        if (audioSource == null)
+        {
+            return;
+        }
+
+        audioSource.clip = tickAudioClip;
+        audioSource.volume = volume;
+        audioSource.pitch = pitch;
+    }
+
+    private void CalculateWeightsAndIndices()
+    {
+        for (int i = 0; i < wheelSlices.Count; i++)
+        {
+            SliceData data = wheelSlices[i];
+            if (data == null)
+            {
+                continue;
+            }
+
+            accumulatedWeight += data.SliceWeight;
+
+            if (data.SliceWeight > 0)
+            {
+                nonZeroChancesIndices.Add(i);
+            }
         }
     }
 
@@ -124,16 +194,73 @@ public class DynamicWheel : MonoBehaviour, IPointerClickHandler, IPointerEnterHa
 
     public void OnPointerClick(PointerEventData eventData)
     {
-        if (!isSpinning)
-        {
-            isSpinning = true;
-            int randomAngle = Random.Range(0, 361);
+        Spin();
+    }
 
-            slicesContainer.DOPunchScale(new Vector3(-0.1f, -0.1f, 0f), 0.15f, 10, 1f);
-            slicesContainer.DOLocalRotate(new Vector3(0f, 0f, -((360 * 5) + randomAngle)), 5f, RotateMode.FastBeyond360)
-                .SetEase(Ease.OutQuad)
-                .OnComplete(() => isSpinning = false);
+    public void Spin()
+    {
+        if (isSpinning || wheelSlices.Count == 0)
+        {
+            return;
         }
+
+        isSpinning = true;
+        OnSpinStart?.Invoke();
+
+        int index = GetRandomPieceIndex();
+
+        float angle = -(sliceAngle * index);
+        float rightOffset = (angle - halfSliceAngleWithPaddings) % 360;
+        float leftOffset = (angle + halfSliceAngleWithPaddings) % 360;
+        float randomAngle = Random.Range(leftOffset, rightOffset);
+
+        Vector3 targetRotation = Vector3.back * (randomAngle + 2 * 360 * spinDuration);
+
+        float prevAngle, currentAngle;
+        prevAngle = currentAngle = slicesContainer.eulerAngles.z;
+        bool isIndicatorOnTheLine = false;
+
+        slicesContainer.DOPunchScale(new Vector3(-0.05f, -0.05f, 0f), 0.15f, 10, 1f);
+
+        slicesContainer.DOLocalRotate(targetRotation, spinDuration, RotateMode.FastBeyond360)
+            .SetEase(Ease.InOutQuart)
+            .OnUpdate(() => {
+                float diff = Mathf.Abs(prevAngle - currentAngle);
+                if (diff >= halfSliceAngle)
+                {
+                    if (isIndicatorOnTheLine && audioSource != null && audioSource.clip != null)
+                    {
+                        audioSource.PlayOneShot(audioSource.clip);
+                    }
+                    prevAngle = currentAngle;
+                    isIndicatorOnTheLine = !isIndicatorOnTheLine;
+                }
+                currentAngle = slicesContainer.eulerAngles.z;
+            })
+            .OnComplete(() => {
+                isSpinning = false;
+
+                if (index < activeWheelSlices.Count)
+                {
+                    OnSpinEnd?.Invoke(activeWheelSlices[index]);
+                }
+            });
+    }
+
+    private int GetRandomPieceIndex()
+    {
+        double r = rand.NextDouble() * accumulatedWeight;
+        float currentWeightCounter = 0f;
+
+        for (int i = 0; i < wheelSlices.Count; i++)
+        {
+            currentWeightCounter += wheelSlices[i].SliceWeight;
+            if (currentWeightCounter >= r)
+            {
+                return i;
+            }
+        }
+        return 0;
     }
 
     private void OnDisable()

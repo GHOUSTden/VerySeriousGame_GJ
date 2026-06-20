@@ -43,7 +43,7 @@ public class GameEntryPoint : MonoBehaviour
 
     private void StartGame()
     {
-        var dynamicWheel = GameObject.Find("Canvas/Wheel").GetComponent<DynamicWheel>();
+        var dynamicWheel = GameObject.Find("Canvas/Circle").GetComponent<DynamicWheel>();
 
         dynamicWheel.GenerateWheel();
     }
