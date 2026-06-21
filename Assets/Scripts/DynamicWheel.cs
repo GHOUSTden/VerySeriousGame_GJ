@@ -15,7 +15,6 @@ public class DynamicWheel : MonoBehaviour, IPointerClickHandler, IPointerEnterHa
     [SerializeField] private Transform linesTransform;
     [SerializeField] private TextMeshProUGUI playerPointsCounter;
     [SerializeField] private EnemyWheel1 enemyWheel1;
-    [SerializeField] private GameObject actuallySpinningGO;
 
     [Header("Slice Configs")]
     [SerializeField] private float sliceWidth = 1f;
@@ -36,7 +35,6 @@ public class DynamicWheel : MonoBehaviour, IPointerClickHandler, IPointerEnterHa
     private bool isSpinning = false;
 
     private Vector2 originalContainerScale;
-    private Vector3 originalASGOPos;
 
     [Header("IDK")]
     private int playerPoints;
@@ -52,7 +50,6 @@ public class DynamicWheel : MonoBehaviour, IPointerClickHandler, IPointerEnterHa
     public void GenerateWheel()
     {
         originalContainerScale = slicesContainer.localScale;
-        originalASGOPos = actuallySpinningGO.transform.localPosition;
 
         activeWheelSlices.Clear();
         nonZeroChancesIndices.Clear();
@@ -225,50 +222,41 @@ public class DynamicWheel : MonoBehaviour, IPointerClickHandler, IPointerEnterHa
 
         slicesContainer.DOPunchScale(new Vector3(-0.05f, -0.05f, 0f), 0.15f, 10, 1f);
 
-        activeSequence = DOTween.Sequence();
 
-        activeSequence
-            .Append(slicesContainer.DOLocalRotate(targetRotation, spinDuration, RotateMode.FastBeyond360)
-                .SetEase(Ease.InOutQuart)
-                .OnUpdate(() => {
-                    float diff = Mathf.Abs(prevAngle - currentAngle);
-                    if (diff >= halfSliceAngle)
+        slicesContainer.DOLocalRotate(targetRotation, spinDuration, RotateMode.FastBeyond360)
+            .SetEase(Ease.InOutQuart)
+            .OnUpdate(() => {
+                float diff = Mathf.Abs(prevAngle - currentAngle);
+                if (diff >= halfSliceAngle)
+                {
+                    if (isIndicatorOnTheLine && audioSource != null && audioSource.clip != null)
                     {
-                        if (isIndicatorOnTheLine && audioSource != null && audioSource.clip != null)
-                        {
-                            audioSource.PlayOneShot(audioSource.clip);
-                        }
-                        prevAngle = currentAngle;
-                        isIndicatorOnTheLine = !isIndicatorOnTheLine;
+                        audioSource.PlayOneShot(audioSource.clip);
                     }
-                    currentAngle = slicesContainer.eulerAngles.z;
-                })
-                .OnComplete(() => {
-                    if (activeWheelSlices == null || activeWheelSlices.Count == 0)
-                    {
-                        Debug.LogError("ActiveWheelSlices is empty");
-                    }
+                    prevAngle = currentAngle;
+                    isIndicatorOnTheLine = !isIndicatorOnTheLine;
+                }
+                currentAngle = slicesContainer.eulerAngles.z;
+            })
+            .OnComplete(() => {
+                if (activeWheelSlices == null || activeWheelSlices.Count == 0)
+                {
+                    Debug.LogError("ActiveWheelSlices is empty");
+                }
 
-                    if (index < activeWheelSlices.Count)
-                    {
-                        SliceBehaviour landedSlice = activeWheelSlices[index];
-                        playerPoints += landedSlice.currentSlicePoints;
-                        playerPointsCounter.text = $"{playerPoints}";
+                if (index < activeWheelSlices.Count)
+                {
+                    SliceBehaviour landedSlice = activeWheelSlices[index];
+                    playerPoints += landedSlice.currentSlicePoints;
+                    playerPointsCounter.text = $"{playerPoints}";
 
-                        Debug.Log($"Slice index: {index}, Points: {landedSlice.currentSlicePoints}");
-                    }
+                    Debug.Log($"Slice index: {index}, Points: {landedSlice.currentSlicePoints}");
+                }
 
-                    enemyWheel1.Spin();
-                }));
+                enemyWheel1.Spin();
 
-        activeSequence
-            .Join(actuallySpinningGO.transform.DOLocalMove(new Vector3(-732f, -460f), 1f))
-                .SetEase(Ease.InOutQuad);
-
-        activeSequence
-            .Append(actuallySpinningGO.transform.DOLocalMove(originalASGOPos, 1f)
-                .SetEase(Ease.InOutQuad)
-                .OnComplete(() => { isSpinning = false; } ));
+                isSpinning = false;
+            });
     }
 
     private int GetRandomPieceIndex()
