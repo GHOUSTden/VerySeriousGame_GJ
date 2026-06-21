@@ -13,6 +13,7 @@ public class EnemyWheel1 : MonoBehaviour
     [SerializeField] private GameObject linePrefab;
     [SerializeField] private Transform linesTransform;
     [SerializeField] private TextMeshProUGUI enemyPointsCounter;
+    [SerializeField] private TurnsManager turnsManager;
 
     [Header("Slice Configs")]
     [SerializeField] private float sliceWidth = 1f;
@@ -35,7 +36,6 @@ public class EnemyWheel1 : MonoBehaviour
     private Vector2 originalContainerScale;
 
     [Header("IDK")]
-    [SerializeField] private DynamicWheel playerWheel;
     private int enemyPoints;
     private float sliceAngle;
     private float halfSliceAngle;
@@ -221,7 +221,7 @@ public class EnemyWheel1 : MonoBehaviour
                     Debug.Log($"Slice index: {index}, Points: {landedSlice.currentSlicePoints}");
                 }
 
-                playerWheel.EndEnemyTurn();
+                turnsManager.SetState(TurnsManager.TurnState.PlayerTurn);
 
             });
     }

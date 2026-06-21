@@ -14,7 +14,7 @@ public class DynamicWheel : MonoBehaviour, IPointerClickHandler, IPointerEnterHa
     [SerializeField] private GameObject linePrefab;
     [SerializeField] private Transform linesTransform;
     [SerializeField] private TextMeshProUGUI playerPointsCounter;
-    [SerializeField] private EnemyWheel1 enemyWheel1;
+    [SerializeField] private TurnsManager turnsManager;
 
     [Header("Slice Configs")]
     [SerializeField] private float sliceWidth = 1f;
@@ -33,7 +33,6 @@ public class DynamicWheel : MonoBehaviour, IPointerClickHandler, IPointerEnterHa
     [HideInInspector] public List<SliceBehaviour> activeWheelSlices = new List<SliceBehaviour>();
 
     private bool isSpinning = false;
-    private bool isEnemySpinning = false;
 
     private Vector2 originalContainerScale;
 
@@ -176,7 +175,7 @@ public class DynamicWheel : MonoBehaviour, IPointerClickHandler, IPointerEnterHa
 
         activeSequence = DOTween.Sequence();
 
-        if (!isSpinning && !isEnemySpinning)
+        if (!isSpinning && turnsManager.currentState == TurnsManager.TurnState.PlayerTurn)
         {
             activeSequence.Append(slicesContainer.DOScale(Vector3.one * 1.015f, 0.25f));
         }
@@ -201,7 +200,7 @@ public class DynamicWheel : MonoBehaviour, IPointerClickHandler, IPointerEnterHa
 
     public void Spin()
     {
-        if (isSpinning || wheelSlices.Count == 0 || isEnemySpinning)
+        if (isSpinning || wheelSlices.Count == 0 || turnsManager.currentState != TurnsManager.TurnState.PlayerTurn)
         {
             return;
         }
@@ -222,7 +221,6 @@ public class DynamicWheel : MonoBehaviour, IPointerClickHandler, IPointerEnterHa
         bool isIndicatorOnTheLine = false;
 
         slicesContainer.DOPunchScale(new Vector3(-0.05f, -0.05f, 0f), 0.15f, 10, 1f);
-
 
         slicesContainer.DOLocalRotate(targetRotation, spinDuration, RotateMode.FastBeyond360)
             .SetEase(Ease.InOutQuart)
@@ -254,10 +252,9 @@ public class DynamicWheel : MonoBehaviour, IPointerClickHandler, IPointerEnterHa
                     Debug.Log($"Slice index: {index}, Points: {landedSlice.currentSlicePoints}");
                 }
 
-                isEnemySpinning = true;
-                enemyWheel1.Spin();
-
                 isSpinning = false;
+
+                turnsManager.SetState(TurnsManager.TurnState.EnemyTurn);
             });
     }
 
@@ -275,11 +272,6 @@ public class DynamicWheel : MonoBehaviour, IPointerClickHandler, IPointerEnterHa
             }
         }
         return 0;
-    }
-
-    public void EndEnemyTurn()
-    {
-        isEnemySpinning = false;
     }
 
     private void OnDisable()
