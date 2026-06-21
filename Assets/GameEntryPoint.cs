@@ -1,4 +1,5 @@
 using System;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -46,5 +47,13 @@ public class GameEntryPoint : MonoBehaviour
     {
         var dynamicWheel = GameObject.Find("Canvas/Circle").GetComponent<DynamicWheel>();
         dynamicWheel.GenerateWheel();
+
+        var enemyDynamicWheel = GameObject.Find("Canvas/EnemyCircle").GetComponent<EnemyWheel1>();
+        enemyDynamicWheel.GenerateWheel();
+
+        TextMeshProUGUI playerPoints = GameObject.Find("Canvas/PointsUI/PlayerPoints").GetComponent<TextMeshProUGUI>();
+        TextMeshProUGUI enemyPoints = GameObject.Find("Canvas/PointsUI/EnemyPoints").GetComponent<TextMeshProUGUI>();
+        playerPoints.text = "0";
+        enemyPoints.text = "0";
     }
 }

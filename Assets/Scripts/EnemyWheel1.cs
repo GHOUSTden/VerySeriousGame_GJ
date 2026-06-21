@@ -1,11 +1,11 @@
 using DG.Tweening;
 using System.Collections.Generic;
-using UnityEngine;
-using UnityEngine.EventSystems;
-using UnityEngine.UI;
 using TMPro;
+using UnityEngine;
+using UnityEngine.UI;
+using UnityEngine.EventSystems;
 
-public class DynamicWheel : MonoBehaviour, IPointerClickHandler, IPointerEnterHandler, IPointerExitHandler
+public class EnemyWheel1 : MonoBehaviour
 {
     [Header("Prefabs, etc.")]
     [SerializeField] private GameObject slicePrefab;
@@ -13,9 +13,7 @@ public class DynamicWheel : MonoBehaviour, IPointerClickHandler, IPointerEnterHa
     [SerializeField] private Transform slicesParent;
     [SerializeField] private GameObject linePrefab;
     [SerializeField] private Transform linesTransform;
-    [SerializeField] private TextMeshProUGUI playerPointsCounter;
-    [SerializeField] private EnemyWheel1 enemyWheel1;
-    [SerializeField] private GameObject actuallySpinningGO;
+    [SerializeField] private TextMeshProUGUI enemyPointsCounter;
 
     [Header("Slice Configs")]
     [SerializeField] private float sliceWidth = 1f;
@@ -36,10 +34,9 @@ public class DynamicWheel : MonoBehaviour, IPointerClickHandler, IPointerEnterHa
     private bool isSpinning = false;
 
     private Vector2 originalContainerScale;
-    private Vector3 originalASGOPos;
 
     [Header("IDK")]
-    private int playerPoints;
+    private int enemyPoints;
     private float sliceAngle;
     private float halfSliceAngle;
     private float halfSliceAngleWithPaddings;
@@ -52,7 +49,6 @@ public class DynamicWheel : MonoBehaviour, IPointerClickHandler, IPointerEnterHa
     public void GenerateWheel()
     {
         originalContainerScale = slicesContainer.localScale;
-        originalASGOPos = actuallySpinningGO.transform.localPosition;
 
         activeWheelSlices.Clear();
         nonZeroChancesIndices.Clear();
@@ -169,38 +165,6 @@ public class DynamicWheel : MonoBehaviour, IPointerClickHandler, IPointerEnterHa
         }
     }
 
-    public void OnPointerEnter(PointerEventData eventData)
-    {
-        if (activeSequence != null && activeSequence.IsActive())
-        {
-            activeSequence.Kill();
-        }
-
-        activeSequence = DOTween.Sequence();
-
-        if (!isSpinning)
-        {
-            activeSequence.Append(slicesContainer.DOScale(Vector3.one * 1.015f, 0.25f));
-        }
-    }
-
-    public void OnPointerExit(PointerEventData eventData)
-    {
-        if (activeSequence != null && activeSequence.IsActive())
-        {
-            activeSequence.Kill();
-        }
-
-        activeSequence = DOTween.Sequence();
-        
-        activeSequence.Append(slicesContainer.DOScale(originalContainerScale, 0.25f));
-    }
-
-    public void OnPointerClick(PointerEventData eventData)
-    {
-        Spin();
-    }
-
     public void Spin()
     {
         if (isSpinning || wheelSlices.Count == 0)
@@ -225,50 +189,38 @@ public class DynamicWheel : MonoBehaviour, IPointerClickHandler, IPointerEnterHa
 
         slicesContainer.DOPunchScale(new Vector3(-0.05f, -0.05f, 0f), 0.15f, 10, 1f);
 
-        activeSequence = DOTween.Sequence();
-
-        activeSequence
-            .Append(slicesContainer.DOLocalRotate(targetRotation, spinDuration, RotateMode.FastBeyond360)
-                .SetEase(Ease.InOutQuart)
-                .OnUpdate(() => {
-                    float diff = Mathf.Abs(prevAngle - currentAngle);
-                    if (diff >= halfSliceAngle)
+        slicesContainer.DOLocalRotate(targetRotation, spinDuration, RotateMode.FastBeyond360)
+            .SetEase(Ease.InOutQuart)
+            .OnUpdate(() => {
+                float diff = Mathf.Abs(prevAngle - currentAngle);
+                if (diff >= halfSliceAngle)
+                {
+                    if (isIndicatorOnTheLine && audioSource != null && audioSource.clip != null)
                     {
-                        if (isIndicatorOnTheLine && audioSource != null && audioSource.clip != null)
-                        {
-                            audioSource.PlayOneShot(audioSource.clip);
-                        }
-                        prevAngle = currentAngle;
-                        isIndicatorOnTheLine = !isIndicatorOnTheLine;
+                        audioSource.PlayOneShot(audioSource.clip);
                     }
-                    currentAngle = slicesContainer.eulerAngles.z;
-                })
-                .OnComplete(() => {
-                    if (activeWheelSlices == null || activeWheelSlices.Count == 0)
-                    {
-                        Debug.LogError("ActiveWheelSlices is empty");
-                    }
+                    prevAngle = currentAngle;
+                    isIndicatorOnTheLine = !isIndicatorOnTheLine;
+                }
+                currentAngle = slicesContainer.eulerAngles.z;
+            })
+            .OnComplete(() => {
+                isSpinning = false;
 
-                    if (index < activeWheelSlices.Count)
-                    {
-                        SliceBehaviour landedSlice = activeWheelSlices[index];
-                        playerPoints += landedSlice.currentSlicePoints;
-                        playerPointsCounter.text = $"{playerPoints}";
+                if (activeWheelSlices == null || activeWheelSlices.Count == 0)
+                {
+                    Debug.LogError("ActiveWheelSlices is empty");
+                }
 
-                        Debug.Log($"Slice index: {index}, Points: {landedSlice.currentSlicePoints}");
-                    }
+                if (index < activeWheelSlices.Count)
+                {
+                    SliceBehaviour landedSlice = activeWheelSlices[index];
+                    enemyPoints += landedSlice.currentSlicePoints;
+                    enemyPointsCounter.text = $"{enemyPoints}";
 
-                    enemyWheel1.Spin();
-                }));
-
-        activeSequence
-            .Join(actuallySpinningGO.transform.DOLocalMove(new Vector3(-732f, -460f), 1f))
-                .SetEase(Ease.InOutQuad);
-
-        activeSequence
-            .Append(actuallySpinningGO.transform.DOLocalMove(originalASGOPos, 1f)
-                .SetEase(Ease.InOutQuad)
-                .OnComplete(() => { isSpinning = false; } ));
+                    Debug.Log($"Slice index: {index}, Points: {landedSlice.currentSlicePoints}");
+                }
+            });
     }
 
     private int GetRandomPieceIndex()
