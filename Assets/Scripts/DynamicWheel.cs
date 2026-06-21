@@ -33,6 +33,7 @@ public class DynamicWheel : MonoBehaviour, IPointerClickHandler, IPointerEnterHa
     [HideInInspector] public List<SliceBehaviour> activeWheelSlices = new List<SliceBehaviour>();
 
     private bool isSpinning = false;
+    private bool isEnemySpinning = false;
 
     private Vector2 originalContainerScale;
 
@@ -175,7 +176,7 @@ public class DynamicWheel : MonoBehaviour, IPointerClickHandler, IPointerEnterHa
 
         activeSequence = DOTween.Sequence();
 
-        if (!isSpinning)
+        if (!isSpinning && !isEnemySpinning)
         {
             activeSequence.Append(slicesContainer.DOScale(Vector3.one * 1.015f, 0.25f));
         }
@@ -200,7 +201,7 @@ public class DynamicWheel : MonoBehaviour, IPointerClickHandler, IPointerEnterHa
 
     public void Spin()
     {
-        if (isSpinning || wheelSlices.Count == 0)
+        if (isSpinning || wheelSlices.Count == 0 || isEnemySpinning)
         {
             return;
         }
@@ -253,6 +254,7 @@ public class DynamicWheel : MonoBehaviour, IPointerClickHandler, IPointerEnterHa
                     Debug.Log($"Slice index: {index}, Points: {landedSlice.currentSlicePoints}");
                 }
 
+                isEnemySpinning = true;
                 enemyWheel1.Spin();
 
                 isSpinning = false;
@@ -273,6 +275,11 @@ public class DynamicWheel : MonoBehaviour, IPointerClickHandler, IPointerEnterHa
             }
         }
         return 0;
+    }
+
+    public void EndEnemyTurn()
+    {
+        isEnemySpinning = false;
     }
 
     private void OnDisable()

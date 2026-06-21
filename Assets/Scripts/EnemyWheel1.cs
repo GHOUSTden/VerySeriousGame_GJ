@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
-using UnityEngine.EventSystems;
 
 public class EnemyWheel1 : MonoBehaviour
 {
@@ -36,6 +35,7 @@ public class EnemyWheel1 : MonoBehaviour
     private Vector2 originalContainerScale;
 
     [Header("IDK")]
+    [SerializeField] private DynamicWheel playerWheel;
     private int enemyPoints;
     private float sliceAngle;
     private float halfSliceAngle;
@@ -220,6 +220,9 @@ public class EnemyWheel1 : MonoBehaviour
 
                     Debug.Log($"Slice index: {index}, Points: {landedSlice.currentSlicePoints}");
                 }
+
+                playerWheel.EndEnemyTurn();
+
             });
     }
 
