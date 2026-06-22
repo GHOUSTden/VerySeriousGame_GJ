@@ -1,8 +1,9 @@
 using UnityEngine;
 using UnityEngine.EventSystems;
 using DG.Tweening;
+using NUnit.Framework.Constraints;
 
-public class GamblingChipBehaviour : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
+public class GamblingChipBehaviour : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler, IPointerClickHandler
 {
     public GamblingChipsSO chipData;
 
@@ -15,6 +16,7 @@ public class GamblingChipBehaviour : MonoBehaviour, IPointerEnterHandler, IPoint
 
     [SerializeField] private GameObject chipParent;
     [SerializeField] private Transform chipTransform;
+    [SerializeField] private ChipInspectorBehaviour chipInspectorBehaviour;
 
     private Vector2 originalChipScale;
     private float chipPosY;
@@ -66,6 +68,16 @@ public class GamblingChipBehaviour : MonoBehaviour, IPointerEnterHandler, IPoint
         activeSequence
             .Append(chipTransform.DOScale(originalChipScale, 0.25f))
             .Join(chipTransform.DOLocalMoveY(0f, 0.25f));
+    }
+
+    public void OnPointerClick(PointerEventData eventData)
+    {
+        if (currentChipName == null || currentDescription == null || currentChipColorImage == null || currentChipIcon == null)
+        {
+            Initialize(chipData);
+        }
+
+        chipInspectorBehaviour.GetDataFromChip(chipData);
     }
 
     private void OnDisable()
