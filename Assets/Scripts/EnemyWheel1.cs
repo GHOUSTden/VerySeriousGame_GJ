@@ -114,7 +114,7 @@ public class EnemyWheel1 : MonoBehaviour
             if (linePrefab != null && linesTransform != null)
             {
                 Transform lineTrns = Instantiate(linePrefab, linesTransform.position, Quaternion.identity, linesTransform).transform;
-                lineTrns.RotateAround(slicesContainer.position, Vector3.back, sliceAngle * i);
+                lineTrns.RotateAround(slicesContainer.position, Vector3.back, (sliceAngle * i) + (halfSliceAngle / 2));
             }
         }
     }

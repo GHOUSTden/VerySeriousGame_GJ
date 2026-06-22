@@ -12,9 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1038dbb7741ad4e46b870a3093a35894, type: 3}
   m_Name: PlusFiveToTheLowestSlice
   m_EditorClassIdentifier: Assembly-CSharp::GamblingChipsSO
-  chipName: 
-  chipIcon: {fileID: 0}
-  description: 
-  chipColorImage: {fileID: 0}
-  chipPrefab: {fileID: 0}
-  rarity: 0
+  chipName: Lowest Five
+  chipIcon: {fileID: -4722383512201705073, guid: 4d311f36328f82e42810747d3060a39b, type: 3}
+  description: Gives +5 to the lowest (points) slice available on the wheel.
+  chipColorImage: {fileID: 2096901906, guid: c6a59744dc253c347b5cea8735f814f7, type: 3}
+  chipPrefab: {fileID: 2584646967921977664, guid: 278f17b87a07dea45912d6996b57c3ab, type: 3}
+  rarity: 1

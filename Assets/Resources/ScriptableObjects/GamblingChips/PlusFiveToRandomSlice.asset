@@ -12,3 +12,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1038dbb7741ad4e46b870a3093a35894, type: 3}
   m_Name: PlusFiveToRandomSlice
   m_EditorClassIdentifier: Assembly-CSharp::GamblingChipsSO
+  chipName: Random Five
+  chipIcon: {fileID: -7635037621974703497, guid: 4d311f36328f82e42810747d3060a39b, type: 3}
+  description: Gives +5 points to the random slice on the wheel (Works for 1 round
+    only)
+  chipColorImage: {fileID: 4816801807745092887, guid: c6a59744dc253c347b5cea8735f814f7, type: 3}
+  chipPrefab: {fileID: 2225883210927291401, guid: 32ad8df63792afe4a988d927ac72453f, type: 3}
+  rarity: 0

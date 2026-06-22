@@ -51,7 +51,7 @@ public class GamblingChipBehaviour : MonoBehaviour, IPointerEnterHandler, IPoint
 
         activeSequence
             .Append(chipTransform.DOScale(Vector3.one * 1.015f, 0.25f))
-            .Join(chipTransform.DOLocalMoveY(chipTransform.position.y + 30f, 0.25f));
+            .Join(chipTransform.DOLocalMoveY(30f, 0.25f));
     }
 
     public void OnPointerExit(PointerEventData eventData)
@@ -65,7 +65,7 @@ public class GamblingChipBehaviour : MonoBehaviour, IPointerEnterHandler, IPoint
 
         activeSequence
             .Append(chipTransform.DOScale(originalChipScale, 0.25f))
-            .Join(chipTransform.DOLocalMoveY(chipPosY, 0.25f));
+            .Join(chipTransform.DOLocalMoveY(0f, 0.25f));
     }
 
     private void OnDisable()
