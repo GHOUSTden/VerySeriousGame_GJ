@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 8644362389801922181}
   - component: {fileID: 5000174266575833680}
   - component: {fileID: 2194802211904340598}
+  - component: {fileID: -4913481346175555453}
   m_Layer: 5
   m_Name: RareChip
   m_TagString: Untagged
@@ -92,6 +93,18 @@ MonoBehaviour:
   m_EffectColor: {r: 0, g: 0, b: 0, a: 0.5}
   m_EffectDistance: {x: 10, y: -10}
   m_UseGraphicAlpha: 1
+--- !u!114 &-4913481346175555453
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 485933290298065506}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e6ce2581babf3bf4384c04f1d0d9fac3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::GamblingChipBehaviour
 --- !u!1 &6074230407063654220
 GameObject:
   m_ObjectHideFlags: 0
@@ -157,7 +170,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: -1078090182, guid: 4d311f36328f82e42810747d3060a39b, type: 3}
+  m_Sprite: {fileID: -1102421027, guid: 4d311f36328f82e42810747d3060a39b, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1

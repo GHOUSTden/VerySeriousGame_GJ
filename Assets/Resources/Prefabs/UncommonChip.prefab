@@ -65,7 +65,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 929610667424640700, guid: 4d311f36328f82e42810747d3060a39b, type: 3}
+  m_Sprite: {fileID: -1102421027, guid: 4d311f36328f82e42810747d3060a39b, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -87,6 +87,7 @@ GameObject:
   - component: {fileID: 913490624604634014}
   - component: {fileID: 3117201033353625121}
   - component: {fileID: 1781724908101993567}
+  - component: {fileID: -4481638672348241708}
   m_Layer: 5
   m_Name: UncommonChip
   m_TagString: Untagged
@@ -167,3 +168,15 @@ MonoBehaviour:
   m_EffectColor: {r: 0, g: 0, b: 0, a: 0.5}
   m_EffectDistance: {x: 10, y: -10}
   m_UseGraphicAlpha: 1
+--- !u!114 &-4481638672348241708
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2584646967921977664}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e6ce2581babf3bf4384c04f1d0d9fac3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::GamblingChipBehaviour
