@@ -2,6 +2,7 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using DG.Tweening;
 using NUnit.Framework.Constraints;
+using UnityEngine.UI;
 
 public class GamblingChipBehaviour : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler, IPointerClickHandler
 {
@@ -14,7 +15,7 @@ public class GamblingChipBehaviour : MonoBehaviour, IPointerEnterHandler, IPoint
     public GameObject currentChipPrefab;
     public ChipRarity currentRarity;
 
-    [SerializeField] private GameObject chipParent;
+    public GameObject chipBody;
     [SerializeField] private Transform chipTransform;
     [SerializeField] private ChipInspectorBehaviour chipInspectorBehaviour;
 
@@ -33,10 +34,11 @@ public class GamblingChipBehaviour : MonoBehaviour, IPointerEnterHandler, IPoint
         currentChipPrefab = chipData.ChipPrefab;
         currentRarity = chipData.Rarity;
 
-    }
+        chipTransform = chipBody.GetComponent<Transform>();
+        chipInspectorBehaviour = FindAnyObjectByType<ChipInspectorBehaviour>();
 
-    private void Start()
-    {
+        chipBody.transform.Find("Icon").GetComponent<Image>().sprite = currentChipIcon;
+
         originalChipScale = chipTransform.localScale;
     }
 
