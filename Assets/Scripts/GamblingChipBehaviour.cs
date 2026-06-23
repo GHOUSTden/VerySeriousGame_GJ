@@ -19,7 +19,6 @@ public class GamblingChipBehaviour : MonoBehaviour, IPointerEnterHandler, IPoint
     [SerializeField] private ChipInspectorBehaviour chipInspectorBehaviour;
 
     private Vector2 originalChipScale;
-    private float chipPosY;
 
     private Sequence activeSequence;
 
@@ -39,7 +38,6 @@ public class GamblingChipBehaviour : MonoBehaviour, IPointerEnterHandler, IPoint
     private void Start()
     {
         originalChipScale = chipTransform.localScale;
-        chipPosY = chipTransform.position.y;
     }
 
     public void OnPointerEnter(PointerEventData eventData)
@@ -76,6 +74,8 @@ public class GamblingChipBehaviour : MonoBehaviour, IPointerEnterHandler, IPoint
         {
             Initialize(chipData);
         }
+
+        chipTransform.DOPunchScale(new Vector3(-0.05f, -0.05f, 0f), 0.15f, 10, 1f);
 
         chipInspectorBehaviour.GetDataFromChip(chipData);
     }
