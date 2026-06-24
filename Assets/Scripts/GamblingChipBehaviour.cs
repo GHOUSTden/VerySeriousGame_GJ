@@ -14,6 +14,7 @@ public class GamblingChipBehaviour : MonoBehaviour, IPointerEnterHandler, IPoint
     public Sprite currentChipColorImage;
     public GameObject currentChipPrefab;
     public ChipRarity currentRarity;
+    public ChipBonus currentBonus;
 
     public GameObject chipBody;
     [SerializeField] private Transform chipTransform;
@@ -33,6 +34,7 @@ public class GamblingChipBehaviour : MonoBehaviour, IPointerEnterHandler, IPoint
         currentChipColorImage = chipData.ChipColorImage;
         currentChipPrefab = chipData.ChipPrefab;
         currentRarity = chipData.Rarity;
+        currentBonus = chipData.Bonus;
 
         chipTransform = chipBody.GetComponent<Transform>();
         chipInspectorBehaviour = FindAnyObjectByType<ChipInspectorBehaviour>();
@@ -79,7 +81,7 @@ public class GamblingChipBehaviour : MonoBehaviour, IPointerEnterHandler, IPoint
 
         chipTransform.DOPunchScale(new Vector3(-0.05f, -0.05f, 0f), 0.15f, 10, 1f);
 
-        chipInspectorBehaviour.GetDataFromChip(chipData);
+        chipInspectorBehaviour.GetDataFromChip(chipData, this.gameObject);
     }
 
     private void OnDisable()

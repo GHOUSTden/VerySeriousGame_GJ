@@ -18,16 +18,20 @@ public class ChipInspectorBehaviour : MonoBehaviour, IPointerClickHandler
     private Sprite _chipIcon;
     private Sprite _chipBody;
     private ChipRarity _chipRarity;
+    public ChipBonus _chipBonus;
+    public GameObject chipGO;
 
     private Sequence activeSequence;
 
-    public void GetDataFromChip(GamblingChipsSO chipData)
+    public void GetDataFromChip(GamblingChipsSO chipData, GameObject chip)
     {
         _chipName = chipData.ChipName;
         _chipDescription = chipData.Description;
         _chipBody = chipData.ChipColorImage;
         _chipIcon = chipData.ChipIcon;
         _chipRarity = chipData.Rarity;
+        _chipBonus = chipData.Bonus;
+        chipGO = chip;
 
         CallChipInspectorUI();
     }
@@ -69,6 +73,11 @@ public class ChipInspectorBehaviour : MonoBehaviour, IPointerClickHandler
     }
 
     public void OnPointerClick(PointerEventData eventData)
+    {
+        CloseInspector();
+    }
+
+    public void CloseInspector()
     {
         if (activeSequence != null && activeSequence.IsActive())
         {

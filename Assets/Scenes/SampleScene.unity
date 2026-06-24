@@ -175,6 +175,8 @@ MonoBehaviour:
   chipDescription: {fileID: 541754969}
   chipIcon: {fileID: 1317540183}
   chipBody: {fileID: 65327187}
+  _chipBonus: 0
+  chipGO: {fileID: 0}
 --- !u!1 &65327184
 GameObject:
   m_ObjectHideFlags: 0
@@ -2376,6 +2378,7 @@ MonoBehaviour:
   playerWheel: {fileID: 146520162}
   enemyWheel1: {fileID: 2062438673}
   totalTurns: 5
+  currentTurns: 0
   turnsCounterUI: {fileID: 880164651}
 --- !u!4 &1376641896
 Transform:
@@ -2852,6 +2855,7 @@ GameObject:
   - component: {fileID: 1718748518}
   - component: {fileID: 1718748520}
   - component: {fileID: 1718748521}
+  - component: {fileID: 1718748522}
   m_Layer: 5
   m_Name: UseButton
   m_TagString: Untagged
@@ -2917,6 +2921,19 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 0.1
+--- !u!114 &1718748522
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1718748517}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 78d5ad7f87d8b2e419fe93cbee15c0c6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ChipBonuses
+  buttonTransform: {fileID: 1718748518}
 --- !u!1 &1878565312
 GameObject:
   m_ObjectHideFlags: 0

@@ -18,3 +18,4 @@ MonoBehaviour:
   chipColorImage: {fileID: 2096901906, guid: c6a59744dc253c347b5cea8735f814f7, type: 3}
   chipPrefab: {fileID: 2584646967921977664, guid: 278f17b87a07dea45912d6996b57c3ab, type: 3}
   rarity: 1
+  bonus: 3

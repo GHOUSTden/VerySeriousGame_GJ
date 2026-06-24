@@ -8,6 +8,14 @@ public enum ChipRarity
     Rare, // Black
 }
 
+public enum ChipBonus
+{
+    DroolingCat,
+    PlusFiveToRandomSlice,
+    PlusFiveToTheHighestSlice,
+    PlusFiveToTheLowestSlice,
+}
+
 [CreateAssetMenu(fileName = "GamblingChip", menuName = "ScriptableObject/GamblingChip")]
 public class GamblingChipsSO : ScriptableObject
 {
@@ -29,4 +37,7 @@ public class GamblingChipsSO : ScriptableObject
 
     [SerializeField] private ChipRarity rarity;
     public ChipRarity Rarity { get => rarity; private set => rarity = value; }
+
+    [SerializeField] private ChipBonus bonus;
+    public ChipBonus Bonus { get => bonus; private set => bonus = value; }
 }
