@@ -436,9 +436,9 @@ MonoBehaviour:
   sliceWidth: 1
   sliceHeight: 1
   audioSource: {fileID: 1670648065}
-  tickAudioClip: {fileID: 8300000, guid: 5143bc38d6b44f649a527196db19e347, type: 3}
-  volume: 0.3
-  pitch: 1
+  tickAudioClip: {fileID: 8300000, guid: ab00a07923ebcc544a1842c4c91860fb, type: 3}
+  volume: 0.1
+  pitch: 2
   spinDuration: 5
   wheelSlices:
   - {fileID: 11400000, guid: 8456c0243e6c5bb44a0490d990d0df23, type: 2}
@@ -452,6 +452,7 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 92eb89b70e8956440818e54844cc8403, type: 2}
   - {fileID: 11400000, guid: cd375afbc2c42cc4394ba31944088a86, type: 2}
   activeWheelSlices: []
+  playerPoints: 0
 --- !u!114 &146520165
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1701,7 +1702,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: 1/999
+  m_text: 0/10
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: fed0b64587ca1e84c8bd607dae56b089, type: 2}
   m_sharedMaterial: {fileID: 2100000, guid: 8b2d63bd1dfe3494ebcf4493264b5763, type: 2}
@@ -1728,7 +1729,7 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 62.35
+  m_fontSize: 72
   m_fontSizeBase: 36
   m_fontWeight: 400
   m_enableAutoSizing: 1
@@ -2374,7 +2375,7 @@ MonoBehaviour:
   currentState: 0
   playerWheel: {fileID: 146520162}
   enemyWheel1: {fileID: 2062438673}
-  totalTurns: 10
+  totalTurns: 5
   turnsCounterUI: {fileID: 880164651}
 --- !u!4 &1376641896
 Transform:
@@ -3421,9 +3422,9 @@ MonoBehaviour:
   sliceWidth: 1
   sliceHeight: 1
   audioSource: {fileID: 1670648065}
-  tickAudioClip: {fileID: 8300000, guid: 5143bc38d6b44f649a527196db19e347, type: 3}
-  volume: 0.5
-  pitch: 1
+  tickAudioClip: {fileID: 8300000, guid: ab00a07923ebcc544a1842c4c91860fb, type: 3}
+  volume: 0.1
+  pitch: 2
   spinDuration: 5
   wheelSlices:
   - {fileID: 11400000, guid: 6139902eb11e21449b667bfe600422fa, type: 2}
@@ -3432,6 +3433,7 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 27e2eb3017264ca45baceab2b78e115b, type: 2}
   - {fileID: 11400000, guid: 92eb89b70e8956440818e54844cc8403, type: 2}
   activeWheelSlices: []
+  enemyPoints: 0
 --- !u!114 &2062438674
 MonoBehaviour:
   m_ObjectHideFlags: 0

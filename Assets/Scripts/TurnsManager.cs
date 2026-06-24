@@ -13,8 +13,8 @@ public class TurnsManager : MonoBehaviour
     [SerializeField] private DynamicWheel playerWheel;
     [SerializeField] private EnemyWheel1 enemyWheel1;
 
-    [SerializeField] private int totalTurns = 10;
-    private int currentTurns = 0;
+    [SerializeField] private int totalTurns = 5;
+    public int currentTurns = 0;
     
     [SerializeField] private TextMeshProUGUI turnsCounterUI;
 
@@ -25,24 +25,28 @@ public class TurnsManager : MonoBehaviour
         switch (currentState)
         {
             case TurnState.PlayerTurn:
+                Debug.Log("Player Turn");
                 break;
 
             case TurnState.EnemyTurn:
-                OnEnemyTurn();
+                Debug.Log("Enemy Turn");
                 enemyWheel1.Spin();
                 break;
         }
     }
 
-    public void OnEnemyTurn()
+    public void OnEnemyTurnEnd()
     {
-        currentTurns++;
-
-        UpdateTurnsCounter();
-
         if (currentTurns >= totalTurns)
         {
-            return; // Do something or idk
+            if (playerWheel.playerPoints >= enemyWheel1.enemyPoints)
+            {
+                Debug.Log("You Win!");
+            }
+            else
+            {
+                Debug.Log("Loser");
+            }
         }
         else
         {
@@ -50,7 +54,7 @@ public class TurnsManager : MonoBehaviour
         }
     }
 
-    private void UpdateTurnsCounter()
+    public void UpdateTurnsCounter()
     {
         turnsCounterUI.text = $"{currentTurns}/{totalTurns}";
     }

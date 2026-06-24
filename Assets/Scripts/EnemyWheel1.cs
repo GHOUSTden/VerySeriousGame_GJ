@@ -36,7 +36,7 @@ public class EnemyWheel1 : MonoBehaviour
     private Vector2 originalContainerScale;
 
     [Header("IDK")]
-    private int enemyPoints;
+    public int enemyPoints;
     private float sliceAngle;
     private float halfSliceAngle;
     private float halfSliceAngleWithPaddings;
@@ -221,7 +221,7 @@ public class EnemyWheel1 : MonoBehaviour
                     Debug.Log($"Slice index: {index}, Points: {landedSlice.currentSlicePoints}");
                 }
 
-                turnsManager.SetState(TurnsManager.TurnState.PlayerTurn);
+                turnsManager.OnEnemyTurnEnd();
 
             });
     }

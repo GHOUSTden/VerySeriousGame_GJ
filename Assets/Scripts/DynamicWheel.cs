@@ -37,7 +37,7 @@ public class DynamicWheel : MonoBehaviour, IPointerClickHandler, IPointerEnterHa
     private Vector2 originalContainerScale;
 
     [Header("IDK")]
-    private int playerPoints;
+    public int playerPoints;
     private float sliceAngle;
     private float halfSliceAngle;
     private float halfSliceAngleWithPaddings;
@@ -254,6 +254,8 @@ public class DynamicWheel : MonoBehaviour, IPointerClickHandler, IPointerEnterHa
 
                 isSpinning = false;
 
+                turnsManager.currentTurns++;
+                turnsManager.UpdateTurnsCounter();
                 turnsManager.SetState(TurnsManager.TurnState.EnemyTurn);
             });
     }

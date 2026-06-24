@@ -55,5 +55,8 @@ public class GameEntryPoint : MonoBehaviour
         TextMeshProUGUI enemyPoints = GameObject.Find("Canvas/PointsUI/EnemyPoints").GetComponent<TextMeshProUGUI>();
         playerPoints.text = "0";
         enemyPoints.text = "0";
+
+        var turnsManager = GameObject.FindAnyObjectByType<TurnsManager>().GetComponent<TurnsManager>();
+        turnsManager.UpdateTurnsCounter();
     }
 }
