@@ -1,11 +1,15 @@
+using DG.Tweening;
+using TMPro;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.EventSystems;
-using Unity.VisualScripting;
-using DG.Tweening;
+using static UnityEngine.InputSystem.OnScreen.OnScreenStick;
 
 public class ChipBonuses : MonoBehaviour, IPointerClickHandler
 {
     [SerializeField] private Transform buttonTransform;
+    [SerializeField] private DynamicWheel playerWheel;
+    [SerializeField] private EnemyWheel1 enemyWheel1;
 
     private ChipInspectorBehaviour chipInspector;
     private ChipBonus currentChipBonus;
@@ -68,17 +72,63 @@ public class ChipBonuses : MonoBehaviour, IPointerClickHandler
 
     private void PointsToTheHighestSlice(int points)
     {
+        int highestIndex = 0;
+        int highestPoints = int.MinValue;
 
+        for (int i = 0; i < playerWheel.activeWheelSlices.Count; i++)
+        {
+            if (playerWheel.activeWheelSlices[i].currentSlicePoints > highestPoints)
+            {
+                highestPoints = playerWheel.activeWheelSlices[i].currentSlicePoints;
+                highestIndex = i;
+            }
+        }
+
+        SliceBehaviour landedSlice = playerWheel.activeWheelSlices[highestIndex];
+        landedSlice.currentSlicePoints += points;
+
+        TextMeshProUGUI sliceText = landedSlice.GetComponentInChildren<TextMeshProUGUI>();
+        if (sliceText != null)
+        {
+            sliceText.text = landedSlice.currentSlicePoints.ToString();
+        }
     }
 
     private void PointsToTheLowestSlice(int points)
     {
+        int lowestIndex = 0;
+        int lowestPoints = int.MaxValue;
 
+        for (int i = 0; i < playerWheel.activeWheelSlices.Count; i++)
+        {
+            if (playerWheel.activeWheelSlices[i].currentSlicePoints < lowestPoints)
+            {
+                lowestPoints = playerWheel.activeWheelSlices[i].currentSlicePoints;
+                lowestIndex = i;
+            }
+        }
+
+        SliceBehaviour landedSlice = playerWheel.activeWheelSlices[lowestIndex];
+        landedSlice.currentSlicePoints += points;
+
+        TextMeshProUGUI sliceText = landedSlice.GetComponentInChildren<TextMeshProUGUI>();
+        if (sliceText != null)
+        {
+            sliceText.text = landedSlice.currentSlicePoints.ToString();
+        }
     }
 
     private void PointsToRandomSlice(int points)
     {
+        int index = playerWheel.GetRandomPieceIndex();
+        SliceBehaviour landedSlice = playerWheel.activeWheelSlices[index];
+        landedSlice.currentSlicePoints += points;
 
+        TextMeshProUGUI sliceText = landedSlice.GetComponentInChildren<TextMeshProUGUI>();
+        if (sliceText != null)
+        {
+            sliceText.text = landedSlice.currentSlicePoints.ToString();
+        }
     }
 
     public void OnDisable()

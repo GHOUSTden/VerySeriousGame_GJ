@@ -55,6 +55,14 @@ public class DynamicWheel : MonoBehaviour, IPointerClickHandler, IPointerEnterHa
         nonZeroChancesIndices.Clear();
         accumulatedWeight = 0;
 
+        if (slicesParent != null)
+        {
+            foreach (Transform child in slicesParent)
+            {
+                Destroy(child.gameObject);
+            }
+        }
+
         if (linesTransform != null)
         {
             foreach (Transform child in linesTransform)
@@ -260,7 +268,7 @@ public class DynamicWheel : MonoBehaviour, IPointerClickHandler, IPointerEnterHa
             });
     }
 
-    private int GetRandomPieceIndex()
+    public int GetRandomPieceIndex()
     {
         double r = rand.NextDouble() * accumulatedWeight;
         float currentWeightCounter = 0f;

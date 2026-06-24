@@ -2934,6 +2934,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ChipBonuses
   buttonTransform: {fileID: 1718748518}
+  playerWheel: {fileID: 146520162}
+  enemyWheel1: {fileID: 2062438673}
 --- !u!1 &1878565312
 GameObject:
   m_ObjectHideFlags: 0
