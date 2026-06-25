@@ -195,9 +195,9 @@ public class EnemyWheel1 : MonoBehaviour
                 float diff = Mathf.Abs(prevAngle - currentAngle);
                 if (diff >= halfSliceAngle)
                 {
-                    if (isIndicatorOnTheLine && audioSource != null && audioSource.clip != null)
+                    if (isIndicatorOnTheLine && audioSource != null && tickAudioClip != null)
                     {
-                        audioSource.PlayOneShot(audioSource.clip);
+                        PlaySoundWithCustomPitch(tickAudioClip, 2f);
                     }
                     prevAngle = currentAngle;
                     isIndicatorOnTheLine = !isIndicatorOnTheLine;
@@ -240,6 +240,17 @@ public class EnemyWheel1 : MonoBehaviour
             }
         }
         return 0;
+    }
+
+    public void PlaySoundWithCustomPitch(AudioClip clip, float customPitch)
+    {
+        audioSource.pitch = customPitch;
+        audioSource.PlayOneShot(clip);
+    }
+
+    public void MoveAwayAndDelete()
+    {
+        gameObject.transform.DOLocalMoveX(1500, 2.5f).SetEase(Ease.InOutQuad).OnComplete(() => Destroy(gameObject));
     }
 
     private void OnDisable()

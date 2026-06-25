@@ -1,11 +1,10 @@
 using DG.Tweening;
 using System.Collections.Generic;
-using UnityEngine;
-using UnityEngine.EventSystems;
-using UnityEngine.UI;
 using TMPro;
+using UnityEngine;
+using UnityEngine.UI;
 
-public class DynamicWheel : MonoBehaviour, IPointerClickHandler, IPointerEnterHandler, IPointerExitHandler
+public class EnemyWheel2 : MonoBehaviour
 {
     [Header("Prefabs, etc.")]
     [SerializeField] private GameObject slicePrefab;
@@ -13,7 +12,7 @@ public class DynamicWheel : MonoBehaviour, IPointerClickHandler, IPointerEnterHa
     [SerializeField] private Transform slicesParent;
     [SerializeField] private GameObject linePrefab;
     [SerializeField] private Transform linesTransform;
-    [SerializeField] private TextMeshProUGUI playerPointsCounter;
+    [SerializeField] private TextMeshProUGUI enemyPointsCounter;
     [SerializeField] private TurnsManager turnsManager;
 
     [Header("Slice Configs")]
@@ -22,7 +21,6 @@ public class DynamicWheel : MonoBehaviour, IPointerClickHandler, IPointerEnterHa
 
     [Header("Audio")]
     [SerializeField] private AudioSource audioSource;
-    [SerializeField] private AudioClip numberDropClip;
     [SerializeField] private AudioClip tickAudioClip;
     [SerializeField][Range(0f, 1f)] private float volume = 0.5f;
     [SerializeField][Range(-3f, 3f)] private float pitch = 1f;
@@ -38,7 +36,7 @@ public class DynamicWheel : MonoBehaviour, IPointerClickHandler, IPointerEnterHa
     private Vector2 originalContainerScale;
 
     [Header("IDK")]
-    public int playerPoints;
+    public int enemyPoints;
     private float sliceAngle;
     private float halfSliceAngle;
     private float halfSliceAngleWithPaddings;
@@ -55,14 +53,6 @@ public class DynamicWheel : MonoBehaviour, IPointerClickHandler, IPointerEnterHa
         activeWheelSlices.Clear();
         nonZeroChancesIndices.Clear();
         accumulatedWeight = 0;
-
-        if (slicesParent != null)
-        {
-            foreach (Transform child in slicesParent)
-            {
-                Destroy(child.gameObject);
-            }
-        }
 
         if (linesTransform != null)
         {
@@ -124,9 +114,13 @@ public class DynamicWheel : MonoBehaviour, IPointerClickHandler, IPointerEnterHa
             if (linePrefab != null && linesTransform != null)
             {
                 Transform lineTrns = Instantiate(linePrefab, linesTransform.position, Quaternion.identity, linesTransform).transform;
-                lineTrns.RotateAround(slicesContainer.position, Vector3.back, sliceAngle * i);
+                lineTrns.RotateAround(slicesContainer.position, Vector3.back, (sliceAngle * i) + halfSliceAngle);
             }
         }
+
+        enemyPoints = 0;
+        enemyPointsCounter.text = $"{enemyPoints}";
+        gameObject.transform.DOLocalMoveX(488, 2.5f).SetEase(Ease.InOutQuad);
     }
 
     private void SetupRectTransform(GameObject obj)
@@ -151,6 +145,7 @@ public class DynamicWheel : MonoBehaviour, IPointerClickHandler, IPointerEnterHa
             return;
         }
 
+        audioSource.clip = tickAudioClip;
         audioSource.volume = volume;
         audioSource.pitch = pitch;
     }
@@ -174,41 +169,9 @@ public class DynamicWheel : MonoBehaviour, IPointerClickHandler, IPointerEnterHa
         }
     }
 
-    public void OnPointerEnter(PointerEventData eventData)
-    {
-        if (activeSequence != null && activeSequence.IsActive())
-        {
-            activeSequence.Kill();
-        }
-
-        activeSequence = DOTween.Sequence();
-
-        if (!isSpinning && turnsManager.currentState == TurnsManager.TurnState.PlayerTurn)
-        {
-            activeSequence.Append(slicesContainer.DOScale(Vector3.one * 1.015f, 0.25f));
-        }
-    }
-
-    public void OnPointerExit(PointerEventData eventData)
-    {
-        if (activeSequence != null && activeSequence.IsActive())
-        {
-            activeSequence.Kill();
-        }
-
-        activeSequence = DOTween.Sequence();
-        
-        activeSequence.Append(slicesContainer.DOScale(originalContainerScale, 0.25f));
-    }
-
-    public void OnPointerClick(PointerEventData eventData)
-    {
-        Spin();
-    }
-
     public void Spin()
     {
-        if (isSpinning || wheelSlices.Count == 0 || turnsManager.currentState != TurnsManager.TurnState.PlayerTurn)
+        if (isSpinning || wheelSlices.Count == 0)
         {
             return;
         }
@@ -246,6 +209,8 @@ public class DynamicWheel : MonoBehaviour, IPointerClickHandler, IPointerEnterHa
                 currentAngle = slicesContainer.eulerAngles.z;
             })
             .OnComplete(() => {
+                isSpinning = false;
+
                 if (activeWheelSlices == null || activeWheelSlices.Count == 0)
                 {
                     Debug.LogError("ActiveWheelSlices is empty");
@@ -254,23 +219,18 @@ public class DynamicWheel : MonoBehaviour, IPointerClickHandler, IPointerEnterHa
                 if (index < activeWheelSlices.Count)
                 {
                     SliceBehaviour landedSlice = activeWheelSlices[index];
-                    playerPoints += landedSlice.currentSlicePoints;
-                    playerPointsCounter.text = $"{playerPoints}";
-
-                    PlaySoundWithCustomPitch(numberDropClip, 1f);
+                    enemyPoints += landedSlice.currentSlicePoints;
+                    enemyPointsCounter.text = $"{enemyPoints}";
 
                     Debug.Log($"Slice index: {index}, Points: {landedSlice.currentSlicePoints}");
                 }
 
-                isSpinning = false;
+                turnsManager.OnEnemyTurnEnd();
 
-                turnsManager.currentTurns++;
-                turnsManager.UpdateTurnsCounter();
-                turnsManager.SetState(TurnsManager.TurnState.EnemyTurn);
             });
     }
 
-    public int GetRandomPieceIndex()
+    private int GetRandomPieceIndex()
     {
         double r = rand.NextDouble() * accumulatedWeight;
         float currentWeightCounter = 0f;
@@ -292,10 +252,9 @@ public class DynamicWheel : MonoBehaviour, IPointerClickHandler, IPointerEnterHa
         audioSource.PlayOneShot(clip);
     }
 
-    public void ResetPoints()
+    public void MoveAwayAndDelete()
     {
-        playerPoints = 0;
-        playerPointsCounter.text = $"{playerPoints}";
+        gameObject.transform.DOLocalMoveX(1500, 2.5f).SetEase(Ease.InOutQuad).OnComplete(() => Destroy(gameObject));
     }
 
     private void OnDisable()

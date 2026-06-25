@@ -1,15 +1,14 @@
 using DG.Tweening;
 using TMPro;
-using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.EventSystems;
-using static UnityEngine.InputSystem.OnScreen.OnScreenStick;
 
 public class ChipBonuses : MonoBehaviour, IPointerClickHandler
 {
     [SerializeField] private Transform buttonTransform;
     [SerializeField] private DynamicWheel playerWheel;
     [SerializeField] private EnemyWheel1 enemyWheel1;
+    [SerializeField] private TurnsManager turnsManager;
 
     private ChipInspectorBehaviour chipInspector;
     private ChipBonus currentChipBonus;
@@ -67,7 +66,7 @@ public class ChipBonuses : MonoBehaviour, IPointerClickHandler
 
     private void DroolingCatBonus()
     {
-
+        turnsManager.droolingCatEffect = 1;
     }
 
     private void PointsToTheHighestSlice(int points)

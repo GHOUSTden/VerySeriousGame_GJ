@@ -48,15 +48,15 @@ public class GameEntryPoint : MonoBehaviour
         var dynamicWheel = GameObject.Find("Canvas/Circle").GetComponent<DynamicWheel>();
         dynamicWheel.GenerateWheel();
 
-        var enemyDynamicWheel = GameObject.Find("Canvas/EnemyCircle").GetComponent<EnemyWheel1>();
-        enemyDynamicWheel.GenerateWheel();
+        var enemyDynamicWheel1 = GameObject.Find("Canvas/EnemyCircle").GetComponent<EnemyWheel1>();
+        enemyDynamicWheel1.GenerateWheel();
 
         TextMeshProUGUI playerPoints = GameObject.Find("Canvas/PointsUI/PlayerPoints").GetComponent<TextMeshProUGUI>();
         TextMeshProUGUI enemyPoints = GameObject.Find("Canvas/PointsUI/EnemyPoints").GetComponent<TextMeshProUGUI>();
         playerPoints.text = "0";
         enemyPoints.text = "0";
 
-        var turnsManager = GameObject.FindAnyObjectByType<TurnsManager>().GetComponent<TurnsManager>();
+        var turnsManager = FindAnyObjectByType<TurnsManager>().GetComponent<TurnsManager>();
         turnsManager.UpdateTurnsCounter();
     }
 }

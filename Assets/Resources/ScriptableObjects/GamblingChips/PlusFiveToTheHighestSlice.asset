@@ -14,8 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::GamblingChipsSO
   chipName: Highest Five
   chipIcon: {fileID: 929610667424640700, guid: 4d311f36328f82e42810747d3060a39b, type: 3}
-  description: Gives +5 to the highest (points) available slice on the wheel (Works
-    only for 1 round)
+  description: Gives +5 to the highest (points) available slice on the wheel.
   chipColorImage: {fileID: 2096901906, guid: c6a59744dc253c347b5cea8735f814f7, type: 3}
   chipPrefab: {fileID: 2584646967921977664, guid: 278f17b87a07dea45912d6996b57c3ab, type: 3}
   rarity: 1

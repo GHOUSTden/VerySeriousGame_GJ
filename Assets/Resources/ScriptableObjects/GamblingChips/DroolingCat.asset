@@ -15,7 +15,8 @@ MonoBehaviour:
   chipName: Drooling Cat
   chipIcon: {fileID: -1102421027, guid: 4d311f36328f82e42810747d3060a39b, type: 3}
   description: Makes enemy behave like drooling cat! Enemy can't spin their wheel
-    for 3 turns.
+    for 1 turn (Can't stack)
   chipColorImage: {fileID: 1729856137, guid: c6a59744dc253c347b5cea8735f814f7, type: 3}
   chipPrefab: {fileID: 485933290298065506, guid: a065292c9e8dd104eaf96f79cf5c2cba, type: 3}
   rarity: 2
+  bonus: 0
